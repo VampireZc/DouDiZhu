@@ -34,7 +34,7 @@ public class Poker extends JLabel implements MouseListener {
     }
 
     public void turnRear() {
-        this.setIcon(new ImageIcon("doudizhu\\image\\poker\\rear.png"));
+        this.setIcon(new ImageIcon("image\\poker\\rear.png"));
         this.up = false;
     }
 

@@ -60,12 +60,15 @@ public class GameJFrame extends JFrame implements ActionListener {
 
         //显示页面
         this.setVisible(true);
-        
+
         //初始化牌（准备牌、洗牌、发牌）
         initCard();
         
         //打牌前的准备工作
         initGame();
+
+
+
 
     }
 
@@ -102,10 +105,13 @@ public class GameJFrame extends JFrame implements ActionListener {
         for (int i = 0; i < pokerList.size(); i++) {
             Poker poker = pokerList.get(i);
             //底牌
-            if (i < 2){
+            if (i < 3){
                 Common.move(poker, poker.getLocation(), new Point(270 + (75 * i), 10));
                 lordList.add(poker);
-            }            //给三个玩家发牌
+                continue;
+            }
+
+            //给三个玩家发牌
             if (i % 3 == 0) {
                 //给左边的电脑发牌
                 Common.move(poker, poker.getLocation(), new Point(50, 60 + i * 5));
@@ -130,13 +136,15 @@ public class GameJFrame extends JFrame implements ActionListener {
             //把当前的牌至于最顶端，这样就会有牌依次错开且叠起来的效果
             container.setComponentZOrder(poker, 0);
 
-            //给牌排序
-            for (int i1 = 0; i1 < 3; i1++) {
-                //排序
-                Common.order(playerList.get(i1));
-                //重新摆放顺序
-                Common.rePosition(this, playerList.get(i1), i1);
-            }
+        }
+
+
+        //给牌排序
+        for (int i1 = 0; i1 < 3; i1++) {
+            //排序
+            Common.order(playerList.get(i1));
+            //重新摆放顺序
+            Common.rePosition(this, playerList.get(i1), i1);
         }
 
     }
