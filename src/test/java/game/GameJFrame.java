@@ -4,9 +4,12 @@ import domain.Poker;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 
-public class GameJFrame extends JFrame {
+public class GameJFrame extends JFrame implements ActionListener {
     // 整个页面的容器
     public static Container container = null;
 
@@ -31,6 +34,9 @@ public class GameJFrame extends JFrame {
     //大集合嵌套（三个玩家的牌，0 是左边玩家 1是中间自己 2是右边玩家）
     ArrayList<ArrayList<Poker>> playerList = new ArrayList<>();
 
+    //底牌
+    ArrayList<Poker> lordList = new ArrayList<>();
+
     //牌盒 (所有的牌)
     ArrayList<Poker> pokerList = new ArrayList<>();
 
@@ -54,6 +60,84 @@ public class GameJFrame extends JFrame {
 
         //显示页面
         this.setVisible(true);
+        
+        //初始化牌（准备牌、洗牌、发牌）
+        initCard();
+        
+        //打牌前的准备工作
+        initGame();
+
+    }
+
+    private void initGame() {
+    }
+
+    private void initCard() {
+
+        for (int i = 1; i <= 5; i++){ // 花色
+            for (int j = 1; j <= 13; j++) { // 数字
+                if(i == 5 && j > 2){ // 过滤大小王
+                    break;
+                }else {
+                    // 生成牌
+                    Poker poker = new Poker(i+ "-" + j, false);
+                    // 放置中间
+                    poker.setLocation(350,150);
+                    pokerList.add(poker);
+                    container.add(poker);
+                }
+
+
+            }
+        }
+
+        // 洗牌
+        Collections.shuffle(pokerList);
+
+        ArrayList<Poker> player1 = new ArrayList<>();
+        ArrayList<Poker> player2 = new ArrayList<>();
+        ArrayList<Poker> player3 = new ArrayList<>();
+
+        // 发牌
+        for (int i = 0; i < pokerList.size(); i++) {
+            Poker poker = pokerList.get(i);
+            //底牌
+            if (i < 2){
+                Common.move(poker, poker.getLocation(), new Point(270 + (75 * i), 10));
+                lordList.add(poker);
+            }            //给三个玩家发牌
+            if (i % 3 == 0) {
+                //给左边的电脑发牌
+                Common.move(poker, poker.getLocation(), new Point(50, 60 + i * 5));
+                player1.add(poker);
+            } else if (i % 3 == 1) {
+                //给中间的自己发牌
+                Common.move(poker, poker.getLocation(), new Point(180 + i * 7, 450));
+                player2.add(poker);
+                //把自己的牌展示正面
+                poker.turnFront();
+
+            } else if (i % 3 == 2) {
+                //给右边的电脑发牌
+                Common.move(poker, poker.getLocation(), new Point(700, 60 + i * 5));
+                player3.add(poker);
+            }
+
+            playerList.add(player1);
+            playerList.add(player2);
+            playerList.add(player3);
+
+            //把当前的牌至于最顶端，这样就会有牌依次错开且叠起来的效果
+            container.setComponentZOrder(poker, 0);
+
+            //给牌排序
+            for (int i1 = 0; i1 < 3; i1++) {
+                //排序
+                Common.order(playerList.get(i1));
+                //重新摆放顺序
+                Common.rePosition(this, playerList.get(i1), i1);
+            }
+        }
 
     }
 
@@ -76,8 +160,79 @@ public class GameJFrame extends JFrame {
         container.setBackground(Color.LIGHT_GRAY);
     }
 
-    private void initView() {
+    public void initView() {
+        //创建抢地主的按钮
+        JButton robBut = new JButton("抢地主");
+        //设置位置
+        robBut.setBounds(320, 400, 75, 20);
+        //添加点击事件
+        robBut.addActionListener(this);
+        //设置隐藏
+        robBut.setVisible(false);
+        //添加到数组中统一管理
+        landlord[0] = robBut;
+        //添加到界面中
+        container.add(robBut);
+
+        //创建不抢的按钮
+        JButton noBut = new JButton("不     抢");
+        //设置位置
+        noBut.setBounds(420, 400, 75, 20);
+        //添加点击事件
+        noBut.addActionListener(this);
+        //设置隐藏
+        noBut.setVisible(false);
+        //添加到数组中统一管理
+        landlord[1] = noBut;
+        //添加到界面中
+        container.add(noBut);
+
+        //创建出牌的按钮
+        JButton outCardBut = new JButton("出牌");
+        outCardBut.setBounds(320, 400, 60, 20);
+        outCardBut.addActionListener(this);
+        outCardBut.setVisible(false);
+        publishCard[0] = outCardBut;
+        container.add(outCardBut);
+
+        //创建不要的按钮
+        JButton noCardBut = new JButton("不要");
+        noCardBut.setBounds(420, 400, 60, 20);
+        noCardBut.addActionListener(this);
+        noCardBut.setVisible(false);
+        publishCard[1] = noCardBut;
+        container.add(noCardBut);
+
+
+        //创建三个玩家前方的提示文字：倒计时
+        //每个玩家一个
+        //左边的电脑玩家是0
+        //中间的自己是1
+        //右边的电脑玩家是2
+        for (int i = 0; i < 3; i++) {
+            time[i] = new JTextField("倒计时:");
+            time[i].setEditable(false);
+            time[i].setVisible(false);
+            container.add(time[i]);
+        }
+        time[0].setBounds(140, 230, 60, 20);
+        time[1].setBounds(374, 360, 60, 20);
+        time[2].setBounds(620, 230, 60, 20);
+
+
+        //创建地主图标
+        dizhu = new JLabel(new ImageIcon("image\\dizhu.png"));
+        dizhu.setVisible(false);
+        dizhu.setSize(40, 40);
+        container.add(dizhu);
+
+
+
     }
 
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+    }
 }
