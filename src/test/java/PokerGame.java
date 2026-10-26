@@ -44,6 +44,7 @@ public class PokerGame {
         TreeSet<Integer> player3 = new TreeSet<>();
         TreeSet<Integer> bottom = new TreeSet<>();
 
+        // 开始循环发牌
         for (int i = 0; i < poker.size(); i++) {
            if (i<3){
                bottom.add(poker.get(i));

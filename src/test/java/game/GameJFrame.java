@@ -72,8 +72,6 @@ public class GameJFrame extends JFrame implements ActionListener {
 
     }
 
-    private void initGame() {
-    }
 
     private void initCard() {
 
@@ -235,6 +233,27 @@ public class GameJFrame extends JFrame implements ActionListener {
         container.add(dizhu);
 
 
+
+    }
+
+    private void initGame() {
+        //创建三个集合用来装三个玩家准备要出的牌
+        for (int i = 0; i < 3; i++) {
+            ArrayList<Poker> list = new ArrayList<>();
+            //添加到大集合中方便管理
+            currentList.add(list);
+        }
+
+        //展示抢地主和不抢地主两个按钮
+        landlord[0].setVisible(true);
+        landlord[1].setVisible(true);
+
+        //展示自己前面的倒计时文本
+        time[1].setVisible(true);
+        //倒计时10秒
+//        po = new PlayerOperation(this, 30);
+//        //开启倒计时
+//        po.start();
 
     }
 
